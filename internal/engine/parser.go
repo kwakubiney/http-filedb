@@ -2,7 +2,6 @@ package engine
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"github.com/sqlite-go"
 )
@@ -32,7 +31,6 @@ func ParseAndExecuteStatement(inputBuffer sqlitego.InputBuffer, db *DB, statemen
 
 	_, err := ExecuteStatement(statement, db)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil

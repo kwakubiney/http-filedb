@@ -15,7 +15,7 @@ import (
 var routeHandlers *gin.Engine
 
 func TestCreateUser(t *testing.T){
-	DB, err := engine.DbOpen("../../test-db", "../../test-index", 0644)
+	DB, err := engine.DbOpen("", "", 0644, "test")
 	if err != nil {
 		log.Println(err)
 	}

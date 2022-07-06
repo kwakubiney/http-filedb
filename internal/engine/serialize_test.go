@@ -4,25 +4,18 @@ import (
 	"fmt"
 	"log"
 	"testing"
-
-	"github.com/gin-gonic/gin"
 	"github.com/sqlite-go/internal/engine"
-	"github.com/sqlite-go/internal/handlers"
-	"github.com/sqlite-go/internal/server"
 	"github.com/stretchr/testify/assert"
+	"os"
 )
 
 var DB *engine.DB
-var routeHandlers *gin.Engine
 
 func TestSerializationAndDeserialization(t *testing.T) {
-	DB, err := engine.DbOpen("test-db", "test-index", 0644)
+	DB, err := engine.DbOpen("", "", 0644, "test")
 	if err != nil {
 		log.Println(err)
 	}
-	handlers := handlers.New(DB)
-	server := server.New(handlers)
-	routeHandlers = server.SetupRoutes()
 	
 	type DeserializeCases struct {
 		Row              engine.Row
@@ -52,8 +45,11 @@ func TestSerializationAndDeserialization(t *testing.T) {
 
 		assert.Equal(t, fmt.Sprintf("ID: %s, Name: %s, Email: %s", row.Row.ID, row.Row.Username, row.Row.Email), deserializedRow)
 	}
-
-	handlers.DB.TestClose()
+	
+	defer os.Remove(DB.IndexFile.Name())
+	defer DB.IndexFile.Close()
+	defer os.Remove(DB.File.Name())
+	defer DB.File.Close()
 }
 
 

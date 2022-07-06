@@ -61,6 +61,9 @@ func DeserializeSpecificRow(db *DB, id string) (string, error) {
 		return "", err
 	}
 	decodedRow := ParseDecodedRow(string(rowBuffer))
+	if db.Test{
+		return decodedRow, err
+	}
 	fmt.Println(decodedRow)
 	return decodedRow, err
 }

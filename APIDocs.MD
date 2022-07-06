@@ -1,6 +1,6 @@
 # Development Usage (Running in terminal)
 
-- Run `go run cmd/main.go -cli` to have access to the `REPL` to type commands
+- Run `go run cmd/main.go -cmd cli` to have access to the `REPL` to type commands
 
 
 # To make an insert

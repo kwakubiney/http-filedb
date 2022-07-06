@@ -11,7 +11,7 @@ import (
 )
 
 func TestReadUser(t *testing.T){
-	db, err := engine.DbOpen("../../test-db", "../../test-index", 0644)
+	db, err := engine.DbOpen("", "", 0644, "test")
 	if err != nil {
 		log.Println(err)
 	}
@@ -46,7 +46,7 @@ func TestReadUser(t *testing.T){
 
 
 func TestReadUsers(t *testing.T){
-	db, err := engine.DbOpen("../../test-db", "../../test-index", 0644)
+	db, err := engine.DbOpen("", "", 0644, "test")
 	if err != nil {
 		log.Println(err)
 	}

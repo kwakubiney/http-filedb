@@ -1,11 +1,15 @@
 package engine_test
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/sqlite-go/internal/engine"
+	"math/rand"
+	"time"
 	"github.com/sqlite-go"
+	"github.com/sqlite-go/internal/engine"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPrepareStatement(t *testing.T) {
@@ -43,7 +47,6 @@ func TestPrepareStatement(t *testing.T) {
 		actualResponse := engine.PrepareStatement(buffer.Buffer, &buffer.Statement)
 		assert.Equal(t, buffer.Response, actualResponse)
 	}
-	DB.TestClose()
 }
 
 func BenchmarkSerialization(b *testing.B) {
@@ -52,16 +55,55 @@ func BenchmarkSerialization(b *testing.B) {
 		Username: "kwakubiney",
 		Email:    "k@mail.com",
 	}
+
+	DB, err := engine.DbOpen("", "", 0644, "test")
+	if err != nil {
+		log.Println(err)
+	}
+	
 	for n := 0; n < b.N; n++ {
 		err := engine.SerializeRow(row, DB)
 		if err != nil {
 			log.Fatalln(err)
 		}
 	}
+	defer os.Remove(DB.IndexFile.Name())
+	defer DB.IndexFile.Close()
+	defer os.Remove(DB.File.Name())
+	defer DB.File.Close()
+}
 
-	err := DB.TestClose()
+
+func BenchmarkDeserialization(b *testing.B) {
+	DB, err := engine.DbOpen("", "", 0644, "test")
 	if err != nil {
 		log.Println(err)
 	}
-}
 
+	for n := 0; n < 20; n++ {
+		row := engine.Row{
+			ID:       fmt.Sprint(n),
+			Username: "kwakubiney",
+			Email:    "k@mail.com",
+		}
+		err := engine.SerializeRow(row, DB)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	for n := 0; n < b.N; n++ {
+		b.StopTimer()
+		n := rand.Intn(20 - 0) + 0
+		b.StartTimer()
+		_, err := engine.DeserializeSpecificRow(DB , fmt.Sprint(n))
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+	defer os.Remove(DB.IndexFile.Name())
+	defer DB.IndexFile.Close()
+	defer os.Remove(DB.File.Name())
+	defer DB.File.Close()
+}

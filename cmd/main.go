@@ -24,7 +24,7 @@ func main() {
 	cmd := flag.String("cmd", "", "")
 	flag.Parse()
 	argument := *cmd
-	db, err := engine.DbOpen("../db", "../index", 0644)
+	db, err := engine.DbOpen("../db", "../index", 0644, "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,7 +40,7 @@ func main() {
 			var statement engine.Statement
 			err := engine.ParseAndExecuteStatement(inputBuffer, db, statement)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
 			}
 		}
 
